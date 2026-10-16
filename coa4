@@ -1,0 +1,315 @@
+def int_to_bin_str(val: int, bits: int) -> str:
+    """Converts an integer to a two's complement binary string of a specified bit width."""
+    return f"{val & ((1 << bits) - 1):0{bits}b}"
+
+def booths_multiplication(multiplicand: int, multiplier: int, num_bits: int):
+    """Performs Booth's Multiplication Algorithm with cycle logging."""
+    # Initialize registers
+    A = 0
+    Q = multiplier
+    Q_minus_1 = 0
+    M = multiplicand
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    print(f"Initial State: A={int_to_bin_str(A, num_bits)}, Q={int_to_bin_str(Q, num_bits)}, Q-1={Q_minus_1}")
+
+    for cycle in range(1, num_bits + 1):
+        print(f"\nCycle {cycle}:")
+        print(f"Current State: A={int_to_bin_str(A, num_bits)}, Q={int_to_bin_str(Q, num_bits)}, Q-1={Q_minus_1}")
+
+        # Determine operation based on the last bit of Q and Q_minus_1
+        last_bit_Q = Q & 1
+        op_bits = (last_bit_Q << 1) | Q_minus_1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+        if op_bits == 2:      # 10
+            A = (A - M) & ((1 << num_bits) - 1)
+            print(f"Operation (10): A = A - M -> A={int_to_bin_str(A, num_bits)}")
+        elif op_bits == 1:    # 01
+            A = (A + M) & ((1 << num_bits) - 1)
+            print(f"Operation (01): A = A + M -> A={int_to_bin_str(A, num_bits)}")
+        else:                 # 00 or 11
+            print(f"Operation ({op_bits:02b}): No operation")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
+
+        # Perform Combined Arithmetic Shift Right (ASR)
+        combined = (A << (num_bits + 1)) | (Q << 1) | Q_minus_1
+        sign_bit = (combined >> (2 * num_bits)) & 1
+        combined >>= 1
+        if sign_bit:
+            combined |= (1 << (2 * num_bits))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
+
+        # Extract the updated register values from the combined variable
+        Q_minus_1 = combined & 1
+        Q = (combined >> 1) & ((1 << num_bits) - 1)
+        A = (combined >> (num_bits + 1)) & ((1 << num_bits) - 1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+        print(f"After Shift: A={int_to_bin_str(A, num_bits)}, Q={int_to_bin_str(Q, num_bits)}, Q-1={Q_minus_1}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+    # Combine A and Q for the final binary product string
+    final_binary_str = int_to_bin_str(A, num_bits) + int_to_bin_str(Q, num_bits)
+
+    # Calculate the decimal result from the 2's complement binary product
+    total_bits = 2 * num_bits
+    result_val = (A << num_bits) | Q
+    if result_val & (1 << (total_bits - 1)):
+        result_val -= (1 << total_bits)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+    return final_binary_str, result_val
+
+# --- Main Program ---
+if __name__ == "__main__":
+    try:
+        multiplicand = int(input("Enter the multiplicand (integer): "))
+        multiplier = int(input("Enter the multiplier (integer): "))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+        num_bits = max(multiplicand.bit_length(), multiplier.bit_length()) + 1
+        if num_bits < 5:  
+            num_bits = 5
+
+        binary_res, decimal_res = booths_multiplication(multiplicand, multiplier, num_bits)
+
+        print(f"\nFinal Result (Binary): {binary_res}")
+        print(f"Final Result (Decimal): {decimal_res}")
+
+    except ValueError:
+        print("Invalid input! Please enter a valid integer.")
